@@ -15,5 +15,10 @@ namespace FluToDo.App.ViewModels
 				propertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+
+		public virtual void OnAppearing()
+		{
+
+		}
 	}
 }

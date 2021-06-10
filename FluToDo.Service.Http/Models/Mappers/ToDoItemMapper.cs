@@ -27,5 +27,14 @@ namespace FluToDo.Service.Http.Models.Mappers
                 IsComplete = toDoItem.IsComplete
             };
         }
+
+        public static ToDoItemApiModel MapToToDoItemApiModel(this ToDoItem toDoItem)
+        {
+            return new ToDoItemApiModel
+            {
+                Name = toDoItem.Name,
+                IsComplete = toDoItem.IsComplete
+            };
+        }
     }
 }

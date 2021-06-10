@@ -17,5 +17,13 @@ namespace FluToDo.App.Ioc
                 return ServiceLocator.Current.GetInstance<ToDoItemsViewModel>();
             }
         }
+
+        public CreateToDoItemViewModel CreateToDoItemViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<CreateToDoItemViewModel>();
+            }
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace FluToDo.Service.Http.Interfaces
     public interface IToDoItemsService
     {
         Task<List<ToDoItem>> GetToDoItems();
+        Task CreateToDoItem(ToDoItem item);
     }
 }

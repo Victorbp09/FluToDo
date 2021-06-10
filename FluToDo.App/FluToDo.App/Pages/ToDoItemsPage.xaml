@@ -2,17 +2,44 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FluToDo.App.Pages.ToDoItemsPage"
              BindingContext="{Binding ToDoItemsViewModel, Source= {StaticResource Locator}}">
-    <StackLayout>
-        <ListView ItemsSource="{Binding ToDoItems}" >
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout>
-                            <Label Text="{Binding Name}" FontSize="Medium"/>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackLayout>
+
+    <ContentPage.ToolbarItems>
+    </ContentPage.ToolbarItems>
+    
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackLayout Grid.Row="0">
+            <ListView ItemsSource="{Binding ToDoItems}"
+                      SeparatorVisibility="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <StackLayout Grid.Row="0" 
+                                             Margin="10">
+                                    <Label Text="{Binding Name}" 
+                                       FontSize="Medium"
+                                       HorizontalOptions="Center"/>
+                                </StackLayout>
+                                <BoxView Grid.Row="1" Style="{DynamicResource PrincipalLineStyle}" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+
+        <StackLayout Grid.Row="1">
+            <Button Text="New"
+                    Command="{Binding NavigateToNewToDoItemCommand}"/>
+        </StackLayout>
+    </Grid>
 </ContentPage>

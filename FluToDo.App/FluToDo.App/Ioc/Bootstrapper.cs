@@ -36,6 +36,7 @@ namespace FluToDo.App.Ioc
         private static void RegisterViewModels(ContainerBuilder builder)
         {
             builder.RegisterType<ToDoItemsViewModel>().AsSelf();
+            builder.RegisterType<CreateToDoItemViewModel>().AsSelf();
         }
     }
 }

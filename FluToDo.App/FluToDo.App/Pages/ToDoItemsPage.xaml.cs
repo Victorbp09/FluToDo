@@ -2,7 +2,7 @@
 
 namespace FluToDo.App.Pages
 {
-    public partial class ToDoItemsPage : ContentPage
+    public partial class ToDoItemsPage : BasePage
     {
 
         public ToDoItemsPage()
