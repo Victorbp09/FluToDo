@@ -4,6 +4,7 @@ using Xamarin.Forms;
 using FlueToDo.App.DTO;
 using System;
 using FluToDo.App.Components.Interfaces;
+using System.Net.Http;
 
 namespace FluToDo.App.ViewModels
 {
@@ -25,11 +26,18 @@ namespace FluToDo.App.ViewModels
         {
             if (IsValidName())
             {
-                await _toDoItemsService.CreateToDoItem(new ToDoItem
+                try
                 {
-                    Name = NewToDoName
-                });
-                await App.Current.MainPage.Navigation.PopAsync();
+                    await _toDoItemsService.CreateToDoItem(new ToDoItem
+                    {
+                        Name = NewToDoName
+                    });
+                    await App.Current.MainPage.Navigation.PopAsync();
+                }
+                catch (HttpRequestException ex)
+                {
+                    DependencyService.Get<IToast>().ShowMessage("Error creating ToDo item.");
+                }
             }
         }
 

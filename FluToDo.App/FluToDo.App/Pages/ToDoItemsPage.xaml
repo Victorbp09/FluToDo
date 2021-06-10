@@ -1,7 +1,9 @@
-﻿<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FluToDo.App.Pages.ToDoItemsPage"
-             BindingContext="{Binding ToDoItemsViewModel, Source= {StaticResource Locator}}">
+﻿<pages:BasePage  xmlns:pages="clr-namespace:FluToDo.App.Pages"
+                 xmlns="http://xamarin.com/schemas/2014/forms"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                x:Class="FluToDo.App.Pages.ToDoItemsPage"
+                x:Name="ToDoItemsPageRoot"
+                BindingContext="{Binding ToDoItemsViewModel, Source= {StaticResource Locator}}">
 
     <ContentPage.ToolbarItems>
     </ContentPage.ToolbarItems>
@@ -13,11 +15,30 @@
         </Grid.RowDefinitions>
 
         <StackLayout Grid.Row="0">
+            
+            <!--Custom message with no items-->
+            <StackLayout IsVisible="{Binding EmptyToDoItemsList}" 
+                         Spacing="30" 
+                         VerticalOptions="CenterAndExpand">
+                <Label Text="ToDo list is empty."
+                       FontSize="Medium"
+                       HorizontalOptions="CenterAndExpand" 
+                       VerticalOptions="CenterAndExpand" />
+            </StackLayout>
+            
             <ListView ItemsSource="{Binding ToDoItems}"
                       SeparatorVisibility="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
+                            
+                            <ViewCell.ContextActions>
+                                <MenuItem Command="{Binding Source={x:Reference Name=ToDoItemsPageRoot}, Path=BindingContext.DeleteToDoItemCommand}"
+                                          CommandParameter="{Binding .}"
+                                          Text="Delete" 
+                                          IsDestructive="True" />
+                            </ViewCell.ContextActions>
+                            
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
@@ -31,6 +52,7 @@
                                 </StackLayout>
                                 <BoxView Grid.Row="1" Style="{DynamicResource PrincipalLineStyle}" />
                             </Grid>
+                            
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -42,4 +64,4 @@
                     Command="{Binding NavigateToNewToDoItemCommand}"/>
         </StackLayout>
     </Grid>
-</ContentPage>
+</pages:BasePage>

@@ -23,6 +23,7 @@ namespace FluToDo.Service.Http.Models.Mappers
         {
             return new ToDoItem
             {
+                Key = toDoItem.Key,
                 Name = toDoItem.Name,
                 IsComplete = toDoItem.IsComplete
             };
@@ -32,6 +33,7 @@ namespace FluToDo.Service.Http.Models.Mappers
         {
             return new ToDoItemApiModel
             {
+                Key = toDoItem.Key,
                 Name = toDoItem.Name,
                 IsComplete = toDoItem.IsComplete
             };

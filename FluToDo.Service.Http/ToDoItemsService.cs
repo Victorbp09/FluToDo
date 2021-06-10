@@ -37,6 +37,12 @@ namespace FluToDo.Service.Http
             await PostAsync(url, body);
         }
 
+        public async Task DeleteToDoItem(string itemKey)
+        {
+            var url = $"todo?id={itemKey}";
+            await DeleteAsync(url);
+        }
+
         private async Task<T> GetAsync<T>(string url)
         {
             var responseString = await _httpClient.GetStringAsync(_baseUrl + url);
@@ -47,7 +53,20 @@ namespace FluToDo.Service.Http
         private async Task PostAsync(string url, string body)
         {
             StringContent postContent = new StringContent(body, Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync(String.Format("{0}{1}", _baseUrl, url), postContent);
+            var response = await _httpClient.PostAsync(String.Format("{0}{1}", _baseUrl, url), postContent);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("Error PostAsync");
+            }
+        }
+
+        private async Task DeleteAsync(string url)
+        {
+            var response = await _httpClient.DeleteAsync(_baseUrl + url);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("Error DeleteAsync");
+            }
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FluToDo.App.Pages.CreateToDoItemPage"
-             BindingContext="{Binding CreateToDoItemViewModel, Source= {StaticResource Locator}}">
+<pages:BasePage  xmlns:pages="clr-namespace:FluToDo.App.Pages"
+                 xmlns="http://xamarin.com/schemas/2014/forms"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                x:Class="FluToDo.App.Pages.CreateToDoItemPage"
+                BindingContext="{Binding CreateToDoItemViewModel, Source= {StaticResource Locator}}">
     
     <ContentPage.ToolbarItems>
     </ContentPage.ToolbarItems>
@@ -28,4 +29,4 @@
             </StackLayout>
         </Grid>
     </ContentPage.Content>
-</ContentPage>
+</pages:BasePage>
