@@ -1,7 +1,6 @@
 ﻿using FlueToDo.App.DTO;
 using FluToDo.Service.Http.Interfaces;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace FluToDo.App.ViewModels
 {

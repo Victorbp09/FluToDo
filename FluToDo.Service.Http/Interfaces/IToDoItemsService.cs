@@ -1,4 +1,4 @@
-﻿using FluToDo.Service.Http.Models;
+﻿using FlueToDo.App.DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,6 +6,6 @@ namespace FluToDo.Service.Http.Interfaces
 {
     public interface IToDoItemsService
     {
-        Task<IEnumerable<ToDoApiModel>> GetToDoItems();
+        Task<List<ToDoItem>> GetToDoItems();
     }
 }
