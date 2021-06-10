@@ -1,5 +1,7 @@
-﻿using FluToDo.Service.Http.Interfaces;
+﻿using FlueToDo.App.DTO;
+using FluToDo.Service.Http.Interfaces;
 using FluToDo.Service.Http.Models;
+using FluToDo.Service.Http.Models.Mappers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -18,22 +20,11 @@ namespace FluToDo.Service.Http
             _baseUrl = baseUrl;
         }
 
-        public async Task<IEnumerable<ToDoApiModel>> GetToDoItems()
+        public async Task<List<ToDoItem>> GetToDoItems()
         {
-            var url = _baseUrl + "";
-            var toDoItems = await GetAsync<IEnumerable<ToDoApiModel>>(url);
-            return toDoItems;
-        }
-
-        public async Task<IEnumerable<ToDoApiModel>> GetToDoItemsMocked()
-        {
-            return new List<ToDoApiModel>
-            {
-                new ToDoApiModel
-                {
-                    Name = "hola"
-                }
-            };
+            var url = _baseUrl + "todo";
+            var toDoItems = await GetAsync<IEnumerable<ToDoItemApiModel>>(url);
+            return toDoItems.MapToToDoItems();
         }
 
         private async Task<T> GetAsync<T>(string url)
