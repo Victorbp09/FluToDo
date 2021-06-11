@@ -18,10 +18,11 @@ namespace FluToDo.App.Ioc
         public static void Initialize()
         {
             var builder = new ContainerBuilder();
+
             RegisterHttpServices(builder);
             RegisterViewModels(builder);
-            var applicationRuntimeSettings = GetApplicationRuntimeSettings();
-            RegisterPlatformSpecificObjects(builder, applicationRuntimeSettings);
+            RegisterAppComponents(builder);
+            
             IContainer container = builder.Build();
 
             AutofacServiceLocator autofacServiceLocator = new AutofacServiceLocator(container);
@@ -44,7 +45,13 @@ namespace FluToDo.App.Ioc
             builder.RegisterType<CreateToDoItemViewModel>().AsSelf();
         }
 
-        private static IToast GetApplicationRuntimeSettings()
+        private static void RegisterAppComponents(ContainerBuilder builder)
+        {
+            var toastImplementation = GetToastApplicationRuntimeSettings();
+            RegisterPlatformSpecificObjects(builder, toastImplementation);
+        }
+
+        private static IToast GetToastApplicationRuntimeSettings()
         {
             var platformSpecificSettings = DependencyService.Get<IToast>();
             if (platformSpecificSettings == null)

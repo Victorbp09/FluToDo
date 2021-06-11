@@ -17,7 +17,7 @@ namespace FluToDo.App.ViewModels
 
         public ICommand SaveNewToDoItemCommand { get; set; }
 
-        public CreateToDoItemViewModel(IToDoItemsService toDoItemsService, IToast toast)
+        public CreateToDoItemViewModel(IToast toast, IToDoItemsService toDoItemsService)
             : base(toast)
         {
             _toDoItemsService = toDoItemsService;
@@ -48,7 +48,7 @@ namespace FluToDo.App.ViewModels
 
         private async Task NavigateToMainPage()
         {
-            await App.Current.MainPage.Navigation.PopAsync();
+            await PopAsync();
         }
     }
 }

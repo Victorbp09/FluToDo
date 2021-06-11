@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 using Xunit;
 
 namespace FluToDo.App.Test
@@ -86,9 +87,10 @@ namespace FluToDo.App.Test
 
         private ToDoItemsViewModel SetupToDoItemsViewModel()
         {
+            Xamarin.Forms.Mocks.MockForms.Init();
             return new ToDoItemsViewModel(
-                _service.Object,
-                Mock.Of<IToast>());
+                Mock.Of<IToast>(),           
+                _service.Object);
         }
 
         private void SetupToDoItemsServiceWithItems(List<ToDoItem> toDoItems)

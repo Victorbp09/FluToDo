@@ -1,4 +1,5 @@
 ﻿using FlueToDo.App.DTO;
+using FluToDo.App.Components;
 using FluToDo.App.Components.Interfaces;
 using FluToDo.App.ViewModels;
 using FluToDo.Service.Http.Interfaces;
@@ -34,24 +35,24 @@ namespace FluToDo.App.Test
         public async Task CreateToDoItem_FiresOnce_WhenNewToDoItemNameIsValid()
         {
             // arrange
-            Infraestructure.MockForms.Init();
             SetupToDoItemsServiceWithItems(new List<ToDoItem>());
             var viewModel = SetupCreateToDoItemViewModel();
             viewModel.NewToDoName = "validName";
-            var newToDoItem = new ToDoItem { Name = viewModel.NewToDoName };
 
             // act
             await Task.Run(() => viewModel.SaveNewToDoItemCommand.Execute(null));
 
             // assert
-            _service.Verify(x => x.CreateToDoItem(newToDoItem), Times.Once);
+            _service.Verify(x => x.CreateToDoItem(It.IsAny<ToDoItem>()), Times.Once);
         }
 
         private CreateToDoItemViewModel SetupCreateToDoItemViewModel()
         {
+            MockNavigation();
+            
             var viewModel = new CreateToDoItemViewModel(
-                _service.Object,
-                Mock.Of<IToast>());
+                Mock.Of<IToast>(),
+                _service.Object);
 
             return viewModel;
         }
@@ -59,6 +60,13 @@ namespace FluToDo.App.Test
         private void SetupToDoItemsServiceWithItems(List<ToDoItem> toDoItems)
         {
             _service = new Mock<IToDoItemsService>();
+        }
+
+        private void MockNavigation()
+        {
+            Xamarin.Forms.Mocks.MockForms.Init();
+            var navigationService = DependencyService.Get<IViewNavigationService>();
+            navigationService.Initialize(Mock.Of<INavigation>(), Mock.Of<NavigationMapper>());
         }
     }
 }

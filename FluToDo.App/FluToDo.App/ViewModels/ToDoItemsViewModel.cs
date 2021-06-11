@@ -1,14 +1,13 @@
 ﻿using FlueToDo.App.DTO;
 using FluToDo.App.Components.Interfaces;
-using FluToDo.App.Pages;
 using FluToDo.Service.Http.Interfaces;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using static FluToDo.App.Helpers.Enums;
 
 namespace FluToDo.App.ViewModels
 {
@@ -21,7 +20,7 @@ namespace FluToDo.App.ViewModels
         public ICommand NavigateToNewToDoItemCommand { get; set; }
         public ICommand DeleteToDoItemCommand { get; set; }
 
-        public ToDoItemsViewModel(IToDoItemsService toDoItemsService, IToast toast)
+        public ToDoItemsViewModel(IToast toast, IToDoItemsService toDoItemsService)
             : base(toast)
         {
             _toDoItemsService = toDoItemsService;
@@ -46,7 +45,7 @@ namespace FluToDo.App.ViewModels
 
         private async void NavigateToNewToDoItem()
         {
-            await App.Current.MainPage.Navigation.PushAsync(new CreateToDoItemPage());
+            await NavigateTo(NavigationPageSource.CreateToDoItemPage);
         }
 
         private async Task DeleteToDoItem(object toDoItem)
