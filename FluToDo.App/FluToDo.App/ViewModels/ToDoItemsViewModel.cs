@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -20,33 +21,27 @@ namespace FluToDo.App.ViewModels
         public ICommand NavigateToNewToDoItemCommand { get; set; }
         public ICommand DeleteToDoItemCommand { get; set; }
 
-        public ToDoItemsViewModel(IToDoItemsService toDoItemsService)
+        public ToDoItemsViewModel(IToDoItemsService toDoItemsService, IToast toast)
+            : base(toast)
         {
             _toDoItemsService = toDoItemsService;
             ToDoItems = new ObservableCollection<ToDoItem>();
             NavigateToNewToDoItemCommand = new Command(NavigateToNewToDoItem);
-            DeleteToDoItemCommand = new Command(DeleteToDoItem);
+            DeleteToDoItemCommand = new Command(async (x) => await DeleteToDoItem(x));
         }
 
-        public override void OnAppearing()
+        public async override void OnAppearing()
         {
             base.OnAppearing();
-            LoadData();
+            await LoadData();
         }
 
-        private async void LoadData()
+        private async Task LoadData()
         {
-            try
-            {
-                var toDoItems = await _toDoItemsService.GetToDoItems();
-                ToDoItems = new ObservableCollection<ToDoItem>(toDoItems);
-                OnPropertyChanged(nameof(ToDoItems));
-                OnPropertyChanged(nameof(EmptyToDoItemsList));
-            }
-            catch (HttpRequestException ex)
-            {
-                DependencyService.Get<IToast>().ShowMessage("Error obtaining ToDo items.");
-            }
+            var toDoItems = await _toDoItemsService.GetToDoItems();
+            ToDoItems = new ObservableCollection<ToDoItem>(toDoItems);
+            OnPropertyChanged(nameof(ToDoItems));
+            OnPropertyChanged(nameof(EmptyToDoItemsList));
         }
 
         private async void NavigateToNewToDoItem()
@@ -54,21 +49,13 @@ namespace FluToDo.App.ViewModels
             await App.Current.MainPage.Navigation.PushAsync(new CreateToDoItemPage());
         }
 
-        private async void DeleteToDoItem(object toDoItem)
+        private async Task DeleteToDoItem(object toDoItem)
         {
             if (IsValidElementToRemove(toDoItem))
             {
                 var item = toDoItem as ToDoItem;
-                try
-                {
-                    await _toDoItemsService.DeleteToDoItem(item.Key);
-                }
-                catch (HttpRequestException ex)
-                {
-                    DependencyService.Get<IToast>().ShowMessage("Error deleting ToDo item.");
-                    return;
-                }
-                LoadData();
+                await _toDoItemsService.DeleteToDoItem(item.Key);
+                await LoadData();
             }
         }
 
@@ -82,7 +69,7 @@ namespace FluToDo.App.ViewModels
                     return true;
                 }
             }
-            DependencyService.Get<IToast>().ShowMessage("ToDo item couldn't be deleted");
+            Toast("ToDo item couldn't be deleted");
             return false;
         }
     }

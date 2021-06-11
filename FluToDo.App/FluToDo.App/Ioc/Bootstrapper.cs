@@ -7,6 +7,9 @@ using FluToDo.App.Helpers;
 using Autofac.Extras.CommonServiceLocator;
 using CommonServiceLocator;
 using FluToDo.App.ViewModels;
+using FluToDo.App.Components.Interfaces;
+using Xamarin.Forms;
+using System;
 
 namespace FluToDo.App.Ioc
 {
@@ -17,6 +20,8 @@ namespace FluToDo.App.Ioc
             var builder = new ContainerBuilder();
             RegisterHttpServices(builder);
             RegisterViewModels(builder);
+            var applicationRuntimeSettings = GetApplicationRuntimeSettings();
+            RegisterPlatformSpecificObjects(builder, applicationRuntimeSettings);
             IContainer container = builder.Build();
 
             AutofacServiceLocator autofacServiceLocator = new AutofacServiceLocator(container);
@@ -37,6 +42,21 @@ namespace FluToDo.App.Ioc
         {
             builder.RegisterType<ToDoItemsViewModel>().AsSelf();
             builder.RegisterType<CreateToDoItemViewModel>().AsSelf();
+        }
+
+        private static IToast GetApplicationRuntimeSettings()
+        {
+            var platformSpecificSettings = DependencyService.Get<IToast>();
+            if (platformSpecificSettings == null)
+            {
+                throw new InvalidOperationException($"Missing '{typeof(IToast).FullName}' implementation.");
+            }
+            return platformSpecificSettings;
+        }
+
+        private static void RegisterPlatformSpecificObjects(ContainerBuilder containerBuilder, IToast toast)
+        {
+            containerBuilder.RegisterInstance(toast).AsImplementedInterfaces().SingleInstance();
         }
     }
 }

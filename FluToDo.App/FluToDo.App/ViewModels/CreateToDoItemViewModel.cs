@@ -5,6 +5,7 @@ using FlueToDo.App.DTO;
 using System;
 using FluToDo.App.Components.Interfaces;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace FluToDo.App.ViewModels
 {
@@ -16,7 +17,8 @@ namespace FluToDo.App.ViewModels
 
         public ICommand SaveNewToDoItemCommand { get; set; }
 
-        public CreateToDoItemViewModel(IToDoItemsService toDoItemsService)
+        public CreateToDoItemViewModel(IToDoItemsService toDoItemsService, IToast toast)
+            : base(toast)
         {
             _toDoItemsService = toDoItemsService;
             SaveNewToDoItemCommand = new Command(SaveNewToDoItem);
@@ -26,18 +28,11 @@ namespace FluToDo.App.ViewModels
         {
             if (IsValidName())
             {
-                try
+                await _toDoItemsService.CreateToDoItem(new ToDoItem
                 {
-                    await _toDoItemsService.CreateToDoItem(new ToDoItem
-                    {
-                        Name = NewToDoName
-                    });
-                    await App.Current.MainPage.Navigation.PopAsync();
-                }
-                catch (HttpRequestException ex)
-                {
-                    DependencyService.Get<IToast>().ShowMessage("Error creating ToDo item.");
-                }
+                    Name = NewToDoName
+                });
+                await NavigateToMainPage();
             }
         }
 
@@ -45,10 +40,15 @@ namespace FluToDo.App.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NewToDoName))
             {
-                DependencyService.Get<IToast>().ShowMessage("Name can't be empty");
+                Toast("Name can't be empty");
                 return false;
             }
             return true;
+        }
+
+        private async Task NavigateToMainPage()
+        {
+            await App.Current.MainPage.Navigation.PopAsync();
         }
     }
 }

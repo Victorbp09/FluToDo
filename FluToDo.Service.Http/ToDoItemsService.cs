@@ -54,19 +54,11 @@ namespace FluToDo.Service.Http
         {
             StringContent postContent = new StringContent(body, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(String.Format("{0}{1}", _baseUrl, url), postContent);
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException("Error PostAsync");
-            }
         }
 
         private async Task DeleteAsync(string url)
         {
             var response = await _httpClient.DeleteAsync(_baseUrl + url);
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException("Error DeleteAsync");
-            }
         }
     }
 }
