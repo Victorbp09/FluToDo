@@ -1,9 +1,9 @@
 ﻿<pages:BasePage  xmlns:pages="clr-namespace:FluToDo.App.Pages"
                  xmlns="http://xamarin.com/schemas/2014/forms"
-                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                x:Class="FluToDo.App.Pages.ToDoItemsPage"
-                x:Name="ToDoItemsPageRoot"
-                BindingContext="{Binding ToDoItemsViewModel, Source= {StaticResource Locator}}">
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 x:Class="FluToDo.App.Pages.ToDoItemsPage"
+                 x:Name="ToDoItemsPageRoot"
+                 xmlns:controls="clr-namespace:FluToDo.App.Controls">
 
     <ContentPage.ToolbarItems>
     </ContentPage.ToolbarItems>
@@ -15,18 +15,26 @@
         </Grid.RowDefinitions>
 
         <StackLayout Grid.Row="0">
-            
+
+            <!--Loading spinner-->
+            <controls:LoadingIndicator VerticalOptions="CenterAndExpand"
+                                       IsLoading="{Binding IsLoading, Mode=OneWay}"
+                                       LoadingIndicatorColor="Blue"
+                                       Text="Loading..."
+                                       TextFontSize="20" /> 
+
             <!--Custom message with no items-->
-            <StackLayout IsVisible="{Binding EmptyToDoItemsList}" 
-                         Spacing="30" 
+            <StackLayout IsVisible="{Binding EmptyToDoItemsList}"
+                         Margin="30" 
                          VerticalOptions="CenterAndExpand">
                 <Label Text="ToDo list is empty."
-                       FontSize="Medium"
+                       FontSize="Title"
                        HorizontalOptions="CenterAndExpand" 
                        VerticalOptions="CenterAndExpand" />
             </StackLayout>
-            
-            <ListView ItemsSource="{Binding ToDoItems}"
+
+            <ListView IsVisible="{Binding IsLoading, Converter={StaticResource NegativeConverter}}"
+                      ItemsSource="{Binding ToDoItems}"
                       SeparatorVisibility="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>

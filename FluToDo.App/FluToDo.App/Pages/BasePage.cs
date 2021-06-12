@@ -6,7 +6,7 @@ namespace FluToDo.App.Pages
 {
     public class BasePage : ContentPage
     {
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 

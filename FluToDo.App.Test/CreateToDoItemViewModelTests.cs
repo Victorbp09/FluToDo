@@ -1,12 +1,11 @@
 ﻿using FlueToDo.App.DTO;
-using FluToDo.App.Components;
-using FluToDo.App.Components.Interfaces;
+using FluToDo.App.Components.Navigation;
+using FluToDo.App.Components.Toast;
 using FluToDo.App.ViewModels;
 using FluToDo.Service.Http.Interfaces;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 using Xunit;
 
 namespace FluToDo.App.Test
@@ -48,9 +47,9 @@ namespace FluToDo.App.Test
 
         private CreateToDoItemViewModel SetupCreateToDoItemViewModel()
         {
-            MockNavigation();
             
             var viewModel = new CreateToDoItemViewModel(
+                Mock.Of<INavigator>(),
                 Mock.Of<IToast>(),
                 _service.Object);
 
@@ -60,13 +59,6 @@ namespace FluToDo.App.Test
         private void SetupToDoItemsServiceWithItems(List<ToDoItem> toDoItems)
         {
             _service = new Mock<IToDoItemsService>();
-        }
-
-        private void MockNavigation()
-        {
-            Xamarin.Forms.Mocks.MockForms.Init();
-            var navigationService = DependencyService.Get<IViewNavigationService>();
-            navigationService.Initialize(Mock.Of<INavigation>(), Mock.Of<NavigationMapper>());
         }
     }
 }

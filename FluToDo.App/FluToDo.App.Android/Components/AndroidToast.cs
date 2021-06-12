@@ -1,6 +1,6 @@
 ﻿using Android.App;
 using Android.Widget;
-using FluToDo.App.Components.Interfaces;
+using FluToDo.App.Components.Toast;
 using FluToDo.App.Droid.Components;
 
 [assembly: Xamarin.Forms.Dependency(typeof(AndroidToast))]

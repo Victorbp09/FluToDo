@@ -1,69 +1,58 @@
 ﻿using Autofac;
-using Autofac.Core;
-using System.Collections.Generic;
-using FluToDo.Service.Http.Interfaces;
-using FluToDo.Service.Http;
-using FluToDo.App.Helpers;
-using Autofac.Extras.CommonServiceLocator;
-using CommonServiceLocator;
+using FluToDo.App.Components.Navigation;
+using FluToDo.App.Ioc.Modules;
+using FluToDo.App.Pages;
 using FluToDo.App.ViewModels;
-using FluToDo.App.Components.Interfaces;
-using Xamarin.Forms;
 using System;
+using System.Collections.Generic;
+using System.Text;
+using Xamarin.Forms;
 
 namespace FluToDo.App.Ioc
 {
-    public sealed class Bootstrapper
+    public class Bootstrapper
     {
-        public static void Initialize()
+        private readonly App _application;
+
+        public Bootstrapper(App application)
+        {
+            _application = application;
+        }
+
+        public void Run()
         {
             var builder = new ContainerBuilder();
+            LoadModules(builder);
+            var container = builder.Build();
 
-            RegisterHttpServices(builder);
-            RegisterViewModels(builder);
-            RegisterAppComponents(builder);
-            
-            IContainer container = builder.Build();
+            var viewFactory = container.Resolve<IViewFactory>();
+            RegisterViews(viewFactory);
 
-            AutofacServiceLocator autofacServiceLocator = new AutofacServiceLocator(container);
-            ServiceLocator.SetLocatorProvider(() => autofacServiceLocator);
-        }
-        private static void RegisterHttpServices(ContainerBuilder builder)
-        {
-            builder.RegisterType<ToDoItemsService>()
-                .As<IToDoItemsService>()
-                .SingleInstance()
-                .WithParameters(new List<Parameter>()
-            {
-                new NamedParameter("baseUrl", Constants.BASE_URL)
-            });
+            ConfigureApplication(container);
         }
 
-        private static void RegisterViewModels(ContainerBuilder builder)
+        private void LoadModules(ContainerBuilder builder)
         {
-            builder.RegisterType<ToDoItemsViewModel>().AsSelf();
-            builder.RegisterType<CreateToDoItemViewModel>().AsSelf();
+            builder.RegisterModule<NavigationModule>();
+            builder.RegisterModule<ViewsModule>();
+            builder.RegisterModule<ServicesModule>();
+            builder.RegisterModule<SharedComponentsModule>();
         }
 
-        private static void RegisterAppComponents(ContainerBuilder builder)
+        private void RegisterViews(IViewFactory viewFactory)
         {
-            var toastImplementation = GetToastApplicationRuntimeSettings();
-            RegisterPlatformSpecificObjects(builder, toastImplementation);
+            viewFactory.Register<ToDoItemsViewModel, ToDoItemsPage>();
+            viewFactory.Register<CreateToDoItemViewModel, CreateToDoItemPage>();
         }
 
-        private static IToast GetToastApplicationRuntimeSettings()
+        private void ConfigureApplication(IContainer container)
         {
-            var platformSpecificSettings = DependencyService.Get<IToast>();
-            if (platformSpecificSettings == null)
-            {
-                throw new InvalidOperationException($"Missing '{typeof(IToast).FullName}' implementation.");
-            }
-            return platformSpecificSettings;
-        }
+            // set main page
+            var viewFactory = container.Resolve<IViewFactory>();
+            var mainPage = viewFactory.Resolve<ToDoItemsViewModel>();
+            var navigationPage = new NavigationPage(mainPage);
 
-        private static void RegisterPlatformSpecificObjects(ContainerBuilder containerBuilder, IToast toast)
-        {
-            containerBuilder.RegisterInstance(toast).AsImplementedInterfaces().SingleInstance();
+            _application.MainPage = navigationPage;
         }
     }
 }

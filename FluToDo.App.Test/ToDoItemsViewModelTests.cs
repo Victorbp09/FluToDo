@@ -1,13 +1,12 @@
 using FlueToDo.App.DTO;
-using FluToDo.App.Components.Interfaces;
+using FluToDo.App.Components.Navigation;
+using FluToDo.App.Components.Toast;
 using FluToDo.App.ViewModels;
 using FluToDo.Service.Http.Interfaces;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 using Xunit;
 
 namespace FluToDo.App.Test
@@ -89,7 +88,8 @@ namespace FluToDo.App.Test
         {
             Xamarin.Forms.Mocks.MockForms.Init();
             return new ToDoItemsViewModel(
-                Mock.Of<IToast>(),           
+                Mock.Of<IToast>(),
+                Mock.Of<INavigator>(),
                 _service.Object);
         }
 

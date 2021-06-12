@@ -2,8 +2,7 @@
 <pages:BasePage  xmlns:pages="clr-namespace:FluToDo.App.Pages"
                  xmlns="http://xamarin.com/schemas/2014/forms"
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                x:Class="FluToDo.App.Pages.CreateToDoItemPage"
-                BindingContext="{Binding CreateToDoItemViewModel, Source= {StaticResource Locator}}">
+                x:Class="FluToDo.App.Pages.CreateToDoItemPage">
     
     <ContentPage.ToolbarItems>
     </ContentPage.ToolbarItems>

@@ -1,20 +1,20 @@
-﻿using FluToDo.App.Components.Interfaces;
+﻿using FluToDo.App.Components.Navigation;
+using FluToDo.App.Components.Toast;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Xamarin.Forms;
-using static FluToDo.App.Helpers.Enums;
 
 namespace FluToDo.App.ViewModels
 {
-    public abstract class BaseViewModel : INotifyPropertyChanged
-    {
+    public abstract class BaseViewModel : IViewModel
+	{
 		private IToast _toast;
-		private IViewNavigationService _navigationService;
 
-		public BaseViewModel(IToast toast)
+        public string Title { get ; set ; }
+
+        public BaseViewModel(IToast toast)
         {
-			_navigationService = DependencyService.Get<IViewNavigationService>();
 			_toast = toast;
 		}
 
@@ -34,19 +34,14 @@ namespace FluToDo.App.ViewModels
 
 		}
 
+		public void SetState<T>(Action<T> action) where T : class, IViewModel
+		{
+			action(this as T);
+		}
+
 		public void Toast(string message)
-        {
+		{
 			_toast.ShowMessage(message);
 		}
-
-		public async Task NavigateTo(NavigationPageSource page) 
-		{
-			await _navigationService.NavigateToAsync(NavigationPageSource.CreateToDoItemPage);
-		}
-
-		public async Task PopAsync()
-		{
-			await _navigationService.GoBackAsync();
-		}
-	}
+    }
 }

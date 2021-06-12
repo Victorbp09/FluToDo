@@ -1,4 +1,4 @@
-﻿namespace FluToDo.App.Components.Interfaces
+﻿namespace FluToDo.App.Components.Toast
 {
     public interface IToast
     {
