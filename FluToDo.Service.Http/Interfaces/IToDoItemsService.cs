@@ -9,5 +9,6 @@ namespace FluToDo.Service.Http.Interfaces
         Task<List<ToDoItem>> GetToDoItems();
         Task CreateToDoItem(ToDoItem item);
         Task DeleteToDoItem(string itemKey);
+        Task UpdateToDoItem(ToDoItem item);
     }
 }

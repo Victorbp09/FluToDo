@@ -42,6 +42,14 @@ namespace FluToDo.Service.Http
             var url = $"todo?id={itemKey}";
             await DeleteAsync(url);
         }
+        
+        public async Task UpdateToDoItem(ToDoItem item)
+        {
+            var url = $"todo/{item.Key}";
+            var toDoItemApiModel = item.MapToToDoItemApiModel();
+            var body = JsonConvert.SerializeObject(toDoItemApiModel);
+            await PutAsync(url, body);
+        }
 
         private async Task<T> GetAsync<T>(string url)
         {
@@ -59,6 +67,12 @@ namespace FluToDo.Service.Http
         private async Task DeleteAsync(string url)
         {
             var response = await _httpClient.DeleteAsync(_baseUrl + url);
+        }
+
+        private async Task PutAsync(string url, string body)
+        {
+            StringContent putContent = new StringContent(body, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync(String.Format("{0}{1}", _baseUrl, url), putContent);
         }
     }
 }

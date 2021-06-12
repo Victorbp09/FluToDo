@@ -2,6 +2,7 @@
 using FluToDo.App.Components.Navigation;
 using FluToDo.App.Components.Toast;
 using FluToDo.Service.Http.Interfaces;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,11 +17,27 @@ namespace FluToDo.App.ViewModels
         private readonly IToDoItemsService _toDoItemsService;
 
         public ObservableCollection<ToDoItem> ToDoItems { get; set; }
-        public bool EmptyToDoItemsList { get { return !IsLoading && ( ToDoItems == null || !ToDoItems.Any()) ;  } }
+        public bool EmptyToDoItemsList { get { return !IsLoading && (ToDoItems == null || !ToDoItems.Any()); } }
 
         public ICommand NavigateToNewToDoItemCommand { get; set; }
         public ICommand DeleteToDoItemCommand { get; set; }
 
+        private ToDoItem _selectedItem;
+        public ToDoItem SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                if (_selectedItem != null)
+                {
+                    var tst = _selectedItem;
+                    EditItemCompleted(_selectedItem);
+                    _selectedItem = null;
+                    OnPropertyChanged("SelectedItem");
+                }
+            }
+        }
         public bool IsLoading { get; set; }
 
         public ToDoItemsViewModel(IToast toast, INavigator navigator, IToDoItemsService toDoItemsService)
@@ -44,8 +61,7 @@ namespace FluToDo.App.ViewModels
         private async Task LoadData()
         {
             var toDoItems = await _toDoItemsService.GetToDoItems();
-            ToDoItems = new ObservableCollection<ToDoItem>(toDoItems);
-            OnPropertyChanged(nameof(ToDoItems));
+            UpdateToDoItemsList(toDoItems); 
         }
 
         private async void NavigateToNewToDoItem()
@@ -59,7 +75,9 @@ namespace FluToDo.App.ViewModels
             {
                 var item = toDoItem as ToDoItem;
                 await _toDoItemsService.DeleteToDoItem(item.Key);
+                Toast($"ToDo item {item.Name} has been deleted correctly");
                 await LoadData();
+                UpdateLoadingComponents(isLoading: false);
             }
         }
 
@@ -82,6 +100,20 @@ namespace FluToDo.App.ViewModels
             IsLoading = isLoading;
             OnPropertyChanged(nameof(IsLoading));
             OnPropertyChanged(nameof(EmptyToDoItemsList));
+        }
+
+        private async void EditItemCompleted(ToDoItem item)
+        {
+            item.IsComplete = !item.IsComplete;
+            await _toDoItemsService.UpdateToDoItem(item);
+            ToDoItems.FirstOrDefault(x => x.Key == item.Key).IsComplete = item.IsComplete;
+            UpdateToDoItemsList(ToDoItems.ToList());
+        }
+
+        private void UpdateToDoItemsList(List<ToDoItem> items)
+        {
+            ToDoItems = new ObservableCollection<ToDoItem>(items);
+            OnPropertyChanged(nameof(ToDoItems));
         }
     }
 }
