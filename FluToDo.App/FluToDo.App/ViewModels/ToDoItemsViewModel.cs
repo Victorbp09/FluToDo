@@ -21,6 +21,7 @@ namespace FluToDo.App.ViewModels
 
         public ICommand NavigateToNewToDoItemCommand { get; set; }
         public ICommand DeleteToDoItemCommand { get; set; }
+        public ICommand RefreshToDoItemsCommand { get; set; }
 
         private ToDoItem _selectedItem;
         public ToDoItem SelectedItem
@@ -39,6 +40,7 @@ namespace FluToDo.App.ViewModels
             }
         }
         public bool IsLoading { get; set; }
+        public bool ItemsRefreshing { get; set; }
 
         public ToDoItemsViewModel(IToast toast, INavigator navigator, IToDoItemsService toDoItemsService)
             : base(toast)
@@ -48,6 +50,7 @@ namespace FluToDo.App.ViewModels
             ToDoItems = new ObservableCollection<ToDoItem>();
             NavigateToNewToDoItemCommand = new Command(NavigateToNewToDoItem);
             DeleteToDoItemCommand = new Command(async (x) => await DeleteToDoItem(x));
+            RefreshToDoItemsCommand = new Command(RefreshToDoItems);
         }
 
         public override async void OnAppearing()
@@ -114,6 +117,13 @@ namespace FluToDo.App.ViewModels
         {
             ToDoItems = new ObservableCollection<ToDoItem>(items);
             OnPropertyChanged(nameof(ToDoItems));
+        }
+
+        private async void RefreshToDoItems()
+        {
+            await LoadData();
+            ItemsRefreshing = false;
+            OnPropertyChanged(nameof(ItemsRefreshing));
         }
     }
 }

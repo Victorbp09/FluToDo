@@ -36,7 +36,10 @@
             <ListView IsVisible="{Binding IsLoading, Converter={StaticResource NegativeConverter}}"
                       ItemsSource="{Binding ToDoItems}"
                       SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                      SeparatorVisibility="None">
+                      SeparatorVisibility="None"
+                      IsPullToRefreshEnabled="True"
+                      RefreshCommand="{Binding RefreshToDoItemsCommand}" 
+                      IsRefreshing="{Binding ItemsRefreshing}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
