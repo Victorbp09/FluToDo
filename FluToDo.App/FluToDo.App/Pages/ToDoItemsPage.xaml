@@ -69,6 +69,10 @@
                                             <Image Source="{DynamicResource check}"
                                                IsVisible="{Binding IsComplete}"/>
 
+                                            <Image Source="{DynamicResource check}"
+                                                   IsVisible="{Binding IsComplete, Converter={StaticResource NegativeConverter}}"
+                                                   Opacity="0"/>
+
                                 </StackLayout>
                                 <BoxView Grid.Row="1" Style="{DynamicResource PrincipalLineStyle}" />
                             </Grid>

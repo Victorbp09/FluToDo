@@ -1,4 +1,5 @@
 ﻿using FlueToDo.App.DTO;
+using FlueToDo.App.DTO.ApiResponse;
 using FluToDo.App.Components.Navigation;
 using FluToDo.App.Components.Toast;
 using FluToDo.App.ViewModels;
@@ -59,6 +60,14 @@ namespace FluToDo.App.Test
         private void SetupToDoItemsServiceWithItems(List<ToDoItem> toDoItems)
         {
             _service = new Mock<IToDoItemsService>();
+
+            _service.Setup(x => x.CreateToDoItem(It.IsAny<ToDoItem>()))
+            .Returns(() =>
+            {
+                return Task.Run(() => {
+                    return new BaseApiResponse();
+                });
+            });
         }
     }
 }

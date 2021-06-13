@@ -4,6 +4,7 @@ using Xamarin.Forms;
 
 namespace FluToDo.App.Converters
 {
+    // Invert the parameter value. i.e. true => false , false => true
     public class NegativeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

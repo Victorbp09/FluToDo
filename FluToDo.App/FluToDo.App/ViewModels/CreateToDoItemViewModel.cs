@@ -24,18 +24,27 @@ namespace FluToDo.App.ViewModels
             SaveNewToDoItemCommand = new Command(SaveNewToDoItem);
         }
 
+        // Save new ToDo item and navigate back to ToDo items list page
         private async void SaveNewToDoItem()
         {
             if (IsValidName())
             {
-                await _toDoItemsService.CreateToDoItem(new ToDoItem
+                var createToDoItemResponse = await _toDoItemsService.CreateToDoItem(new ToDoItem
                 {
                     Name = NewToDoName
                 });
+
+                if (!createToDoItemResponse.IsSuccess)
+                {
+                    Toast("Connection error");
+                    return;
+                }
+
                 await _navigator.PopAsync();
             }
         }
 
+        // Check if a new ToDo item name is valid
         private bool IsValidName()
         {
             if (string.IsNullOrWhiteSpace(NewToDoName))

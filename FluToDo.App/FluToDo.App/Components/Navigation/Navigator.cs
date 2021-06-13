@@ -15,18 +15,11 @@ namespace FluToDo.App.Components.Navigation
             _viewFactory = viewFactory;
         }
 
-        private Xamarin.Forms.INavigation Navigation
+        private INavigation Navigation
         {
             get
             {
-                try
-                {
-                    return Application.Current.MainPage.Navigation;
-                }
-                catch(Exception ex)
-                {
-                    return null;
-                }
+                return Application.Current.MainPage.Navigation;
             }
         }
 

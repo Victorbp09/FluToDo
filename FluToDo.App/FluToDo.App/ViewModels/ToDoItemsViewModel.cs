@@ -55,35 +55,53 @@ namespace FluToDo.App.ViewModels
 
         public override async void OnAppearing()
         {
-            UpdateLoadingComponents(isLoading: true);
             base.OnAppearing();
             await LoadData();
+        }
+
+        // Load ToDo items list data
+        private async Task LoadData()
+        {
+            UpdateLoadingComponents(isLoading: true);
+            var getToDoItemsResponse = await _toDoItemsService.GetToDoItems();
+
+            if (!getToDoItemsResponse.IsSuccess)
+            {
+                Toast("Connection error");
+                return;
+            }
+
+            UpdateToDoItemsList(getToDoItemsResponse.Items);
             UpdateLoadingComponents(isLoading: false);
         }
 
-        private async Task LoadData()
-        {
-            var toDoItems = await _toDoItemsService.GetToDoItems();
-            UpdateToDoItemsList(toDoItems); 
-        }
-
+        // Navigate to create ToDo item page
         private async void NavigateToNewToDoItem()
         {
             await _navigator.PushAsync<CreateToDoItemViewModel>();
         }
 
+        // Delete To Do item
         private async Task DeleteToDoItem(object toDoItem)
         {
             if (IsValidElementToRemove(toDoItem))
             {
                 var item = toDoItem as ToDoItem;
-                await _toDoItemsService.DeleteToDoItem(item.Key);
+                var deleteItemResponse = await _toDoItemsService.DeleteToDoItem(item.Key);
+                
+                if (!deleteItemResponse.IsSuccess)
+                {
+                    Toast("Connection error");
+                    return;
+                }
+
                 Toast($"ToDo item {item.Name} has been deleted correctly");
                 await LoadData();
                 UpdateLoadingComponents(isLoading: false);
             }
         }
 
+        // Check To Do items has a valid key
         private bool IsValidElementToRemove(object toDoItem)
         {
             if (toDoItem is ToDoItem)
@@ -98,6 +116,7 @@ namespace FluToDo.App.ViewModels
             return false;
         }
 
+        // Update loading components visibility (spinner and empty list message)
         private void UpdateLoadingComponents(bool isLoading)
         {
             IsLoading = isLoading;
@@ -105,20 +124,30 @@ namespace FluToDo.App.ViewModels
             OnPropertyChanged(nameof(EmptyToDoItemsList));
         }
 
+        // Invert value of IsComplete property of ToDo item. 
         private async void EditItemCompleted(ToDoItem item)
         {
             item.IsComplete = !item.IsComplete;
-            await _toDoItemsService.UpdateToDoItem(item);
+            var editToDoItemResponse = await _toDoItemsService.UpdateToDoItem(item);
+
+            if (!editToDoItemResponse.IsSuccess)
+            {
+                Toast("Connection error");
+                return;
+            }
+
             ToDoItems.FirstOrDefault(x => x.Key == item.Key).IsComplete = item.IsComplete;
             UpdateToDoItemsList(ToDoItems.ToList());
         }
 
+        // Update the items of the ObservableCollection ToDoItems
         private void UpdateToDoItemsList(List<ToDoItem> items)
         {
             ToDoItems = new ObservableCollection<ToDoItem>(items);
             OnPropertyChanged(nameof(ToDoItems));
         }
 
+        // Update list of items after performing a pull-to-refresh
         private async void RefreshToDoItems()
         {
             await LoadData();

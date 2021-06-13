@@ -1,4 +1,5 @@
 using FlueToDo.App.DTO;
+using FlueToDo.App.DTO.ApiResponse;
 using FluToDo.App.Components.Navigation;
 using FluToDo.App.Components.Toast;
 using FluToDo.App.ViewModels;
@@ -84,6 +85,24 @@ namespace FluToDo.App.Test
             Assert.Equal(viewModel.ToDoItems.First().Key, _mockToDoItem1.Key);
         }
 
+        [Fact]
+        public async Task UpdateToDoItem_UpdateIsComplete_WhenItemIsTapped()
+        {
+            // arrange
+            List<ToDoItem> toDoItems = new List<ToDoItem> { _mockToDoItem1, _mockToDoItem2 };
+            var currentIsCompleteValue = toDoItems.First().IsComplete;
+            SetupToDoItemsServiceWithItems(toDoItems);
+            var viewModel = SetupToDoItemsViewModel();
+            await Task.Run(() => viewModel.OnAppearing());
+
+            // act
+            await Task.Run(() => viewModel.SelectedItem = viewModel.ToDoItems.First());
+
+            // assert
+            var expectedIsCompleteValue = !currentIsCompleteValue;
+            Assert.Equal(expectedIsCompleteValue, viewModel.ToDoItems.First().IsComplete);
+        }
+
         private ToDoItemsViewModel SetupToDoItemsViewModel()
         {
             Xamarin.Forms.Mocks.MockForms.Init();
@@ -100,19 +119,29 @@ namespace FluToDo.App.Test
             _service.Setup(x => x.GetToDoItems())
             .Returns(() =>
             {
-                return Task.Run(() => toDoItems);
+                return Task.Run(() => new GetToDoItemsResponse
+                {
+                    Items = toDoItems
+                });
             });
 
             _service.Setup(x => x.DeleteToDoItem(_mockToDoItem1.Key))
             .Returns(() =>
             {
-                return Task.Run(() => toDoItems.Remove(_mockToDoItem1));
+                return Task.Run(() => 
+                {
+                    toDoItems.Remove(_mockToDoItem1);
+                    return new BaseApiResponse();
+                });
             });
 
             _service.Setup(x => x.DeleteToDoItem(_mockToDoItem2.Key))
             .Returns(() =>
             {
-                return Task.Run(() => toDoItems.Remove(_mockToDoItem2));
+                return Task.Run(() => {
+                    toDoItems.Remove(_mockToDoItem2);
+                    return new BaseApiResponse();
+                });
             });
         }
 

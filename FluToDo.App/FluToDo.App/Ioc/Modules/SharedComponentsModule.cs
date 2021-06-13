@@ -13,6 +13,7 @@ namespace FluToDo.App.Ioc.Modules
             RegisterToast(builder);
         }
 
+        // Get Android or iOS implementation and register it with the interface IToast
         private void RegisterToast(ContainerBuilder builder)
         {
             var toastImplementation = DependencyService.Get<IToast>();

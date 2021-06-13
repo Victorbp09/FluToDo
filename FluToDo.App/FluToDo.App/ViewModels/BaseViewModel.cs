@@ -39,6 +39,7 @@ namespace FluToDo.App.ViewModels
 			action(this as T);
 		}
 
+		// Show a toast with a message
 		public void Toast(string message)
 		{
 			_toast.ShowMessage(message);

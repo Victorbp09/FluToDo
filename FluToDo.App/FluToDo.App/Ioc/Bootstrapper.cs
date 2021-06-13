@@ -19,6 +19,7 @@ namespace FluToDo.App.Ioc
             _application = application;
         }
 
+        // Load components, modules and build the app container with all the dependencies
         public void Run()
         {
             var builder = new ContainerBuilder();
@@ -31,6 +32,7 @@ namespace FluToDo.App.Ioc
             ConfigureApplication(container);
         }
 
+        // Load app modules
         private void LoadModules(ContainerBuilder builder)
         {
             builder.RegisterModule<NavigationModule>();
@@ -39,15 +41,16 @@ namespace FluToDo.App.Ioc
             builder.RegisterModule<SharedComponentsModule>();
         }
 
+        // Register app viewmodels with their respective pages (views)
         private void RegisterViews(IViewFactory viewFactory)
         {
             viewFactory.Register<ToDoItemsViewModel, ToDoItemsPage>();
             viewFactory.Register<CreateToDoItemViewModel, CreateToDoItemPage>();
         }
 
+        // Configure the application views and set the main page
         private void ConfigureApplication(IContainer container)
         {
-            // set main page
             var viewFactory = container.Resolve<IViewFactory>();
             var mainPage = viewFactory.Resolve<ToDoItemsViewModel>();
             var navigationPage = new NavigationPage(mainPage);

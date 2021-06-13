@@ -1,4 +1,5 @@
 ﻿using FlueToDo.App.DTO;
+using FlueToDo.App.DTO.ApiResponse;
 using FluToDo.Service.Http.Interfaces;
 using FluToDo.Service.Http.Models;
 using FluToDo.Service.Http.Models.Mappers;
@@ -22,33 +23,59 @@ namespace FluToDo.Service.Http
             _baseUrl = baseUrl;
         }
 
-        public async Task<List<ToDoItem>> GetToDoItems()
+        // Get the list of ToDo items
+        public async Task<GetToDoItemsResponse> GetToDoItems()
         {
-            var url = "todo";
-            var toDoItems = await GetAsync<IEnumerable<ToDoItemApiModel>>(url);
-            return toDoItems.MapToToDoItems();
+            try
+            {
+                var url = "todo";
+                var toDoItems = await GetAsync<IEnumerable<ToDoItemApiModel>>(url);
+                return new GetToDoItemsResponse
+                {
+                    Items = toDoItems.MapToToDoItems()
+                };
+            }
+            catch (HttpRequestException ex)
+            {
+                return new GetToDoItemsResponse { IsSuccess = false };
+            }
         }
 
-        public async Task CreateToDoItem(ToDoItem item)
+        // Create a ToDo item
+        public async Task<BaseApiResponse> CreateToDoItem(ToDoItem item)
         {
             var url = "todo";
             var toDoItemApiModel = item.MapToToDoItemApiModel();
             var body = JsonConvert.SerializeObject(toDoItemApiModel);
-            await PostAsync(url, body);
+            bool success = await PostAsync(url, body);
+            return new BaseApiResponse
+            {
+                IsSuccess = success
+            };
         }
 
-        public async Task DeleteToDoItem(string itemKey)
+        // Delete a ToDo item
+        public async Task<BaseApiResponse> DeleteToDoItem(string itemKey)
         {
             var url = $"todo?id={itemKey}";
-            await DeleteAsync(url);
+            bool success = await DeleteAsync(url);
+            return new BaseApiResponse
+            {
+                IsSuccess = success
+            };
         }
         
-        public async Task UpdateToDoItem(ToDoItem item)
+        // Update a ToDo item
+        public async Task<BaseApiResponse> UpdateToDoItem(ToDoItem item)
         {
             var url = $"todo/{item.Key}";
             var toDoItemApiModel = item.MapToToDoItemApiModel();
             var body = JsonConvert.SerializeObject(toDoItemApiModel);
-            await PutAsync(url, body);
+            bool success = await PutAsync(url, body);
+            return new BaseApiResponse
+            {
+                IsSuccess = success
+            };
         }
 
         private async Task<T> GetAsync<T>(string url)
@@ -58,21 +85,47 @@ namespace FluToDo.Service.Http
             return result;
         }
 
-        private async Task PostAsync(string url, string body)
+        // Bad implementation due error in the ToDo API (always returns 500).
+        // Should return response.IsSuccessStatusCode or false in the catch block
+        private async Task<bool> PostAsync(string url, string body)
         {
-            StringContent postContent = new StringContent(body, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(String.Format("{0}{1}", _baseUrl, url), postContent);
+            try
+            {
+                StringContent postContent = new StringContent(body, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(String.Format("{0}{1}", _baseUrl, url), postContent);
+                return true;
+            }
+            catch (HttpRequestException ex)
+            {
+                return true;
+            }
         }
 
-        private async Task DeleteAsync(string url)
+        private async Task<bool> DeleteAsync(string url)
         {
-            var response = await _httpClient.DeleteAsync(_baseUrl + url);
+            try
+            {
+                var response = await _httpClient.DeleteAsync(_baseUrl + url);
+                return response.IsSuccessStatusCode;
+            }
+            catch(HttpRequestException ex)
+            {
+                return false;
+            }
         }
 
-        private async Task PutAsync(string url, string body)
+        private async Task<bool> PutAsync(string url, string body)
         {
-            StringContent putContent = new StringContent(body, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync(String.Format("{0}{1}", _baseUrl, url), putContent);
-        }
+            try
+            {
+                StringContent putContent = new StringContent(body, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync(String.Format("{0}{1}", _baseUrl, url), putContent);
+                return response.IsSuccessStatusCode;
+            }
+            catch(HttpRequestException ex)
+            {
+                return false;
+            }
+}
     }
 }

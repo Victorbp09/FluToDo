@@ -5,6 +5,7 @@ namespace FluToDo.Service.Http.Models.Mappers
 {
     public static class ToDoItemMapper
     {
+        // Convert a list of ToDoItemApiModel in a list of ToDoItem
         public static List<ToDoItem> MapToToDoItems(this IEnumerable<ToDoItemApiModel> toDoItems)
         {
             var mappedItes = new List<ToDoItem>();
@@ -19,6 +20,7 @@ namespace FluToDo.Service.Http.Models.Mappers
             return mappedItes;
         }
 
+        // Convert a ToDoItemApiModel in a ToDoItem
         public static ToDoItem MapToToDoItem(this ToDoItemApiModel toDoItem)
         {
             return new ToDoItem
@@ -29,6 +31,7 @@ namespace FluToDo.Service.Http.Models.Mappers
             };
         }
 
+        // Convert a ToDoItem in a ToDoItemApiModel
         public static ToDoItemApiModel MapToToDoItemApiModel(this ToDoItem toDoItem)
         {
             return new ToDoItemApiModel
